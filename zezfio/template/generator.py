@@ -23,9 +23,10 @@ def generate_server(json_path,db_path,debug=False):
 
 def generate_fortran(json_path,debug=False):
 
-
+    from zezfio.babel import c2stuff
     json_config = load_config.get_json(json_path)
-    template = env.get_template('lib_fortran.jinja2.f90').render(json_config=json_config)
+    template = env.get_template('lib_fortran.jinja2.f90').render(json_config=json_config,
+                                                                 c2stuff=c2stuff)
     if debug:
         print template
 

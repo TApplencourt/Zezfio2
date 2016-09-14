@@ -13,8 +13,11 @@ def read_scalar(path,type_):
         f = babel.c2stuff[type_].str2py
     except KeyError:
         raise TypeError, "Error: cannot convert str to %s" % type_
-    else:        
-        py_data = f(data)
+    else:
+        try:
+            py_data = f(data)
+        except TypeError:   # for strings
+            py_data = data.ljust(f)
 
     #Python -> C_type
     try:
@@ -22,7 +25,11 @@ def read_scalar(path,type_):
     except KeyError:
         raise TypeError, "Error: cannot convert %s to %s" % (py_data, type_)
 
-    return array.array(code,[py_data])
+    if code == 'c':
+      result = array.array(code,py_data)
+    else:
+      result = array.array(code,[py_data])
+    return result
 
 def write_scalar(path, py_scalar):
 

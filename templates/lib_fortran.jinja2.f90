@@ -9,7 +9,7 @@ end
 
 subroutine ezfio_set_{{cat}}_{{var.name}}(buffer)
    implicit none
-   double precision, intent(out) :: buffer(*)
+   {{ c2stuff[var.type].fortran_type }}, intent(in) :: buffer(*)
    integer :: zezfio_set, zezfio_nbytes
    integer :: zerrno, buffer_size
 
@@ -30,7 +30,7 @@ end subroutine
 
 subroutine ezfio_get_{{cat}}_{{var.name}}(buffer)
    implicit none
-   double precision, intent(out) :: buffer(*)
+   {{ c2stuff[var.type].fortran_type }}, intent(out) :: buffer(*)
    integer :: zezfio_get
    integer :: zerrno
 

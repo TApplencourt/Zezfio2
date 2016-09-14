@@ -84,6 +84,7 @@ function zezfio_get(msg,msg_size,ptr_buffer) result(zerrno)
 
    rc = f77_zmq_send(responder, "get."//msg, 4+msg_size,0)
    rc = f77_zmq_recv(responder,zerrno,4, 0)
+
    
    if (zerrno >= 0) then
 
