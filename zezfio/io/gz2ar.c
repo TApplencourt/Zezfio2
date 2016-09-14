@@ -284,7 +284,7 @@ void buffer2char(char * const buffer, const size_t lines_supposed,const size_t p
 
     else{
 
-      for (i=0; i<padding-size_string; i++, char_array_position++){
+      for (i=1; i<padding-size_string; i++, char_array_position++){
         char_array[char_array_position] = ' '; 
       }
       size_string = 0;
@@ -292,6 +292,7 @@ void buffer2char(char * const buffer, const size_t lines_supposed,const size_t p
 
     bytes_read++;
     char_array_position++;
+
   }
 
   return;

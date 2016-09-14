@@ -36,22 +36,47 @@ def gzip2buffer(file,length):
 #This function is IMPUR !!! Buffer will be modify !
 def buffer2stuff_impur(str_type,buffer,length):
 
-    #Get the C function
-    try:
-        c_function = getattr(dll,"buffer2%s_impur"%str_type)
-    except AttributeError:
-        raise BytesWarning("Error: No C function to convert your buffer in this format: %s"%str_type)
-    #Malloc the c_array
-    try:
-        c_type = babel.c2stuff[str_type].c_type
-    except:
-        raise BytesWarning("Error: No C_type related to: %s"%str_type)
-    else:
-        c_array_type = ( c_type * length)
-        c_array = c_array_type()
+    if not "char[" in str_type:
 
-    #Call the function
-    c_function(buffer,length,c_array)
+        #Get the C function
+        try:
+            c_function = getattr(dll,"buffer2%s_impur"%str_type)
+        except AttributeError:
+            raise BytesWarning("Error: No C function to convert your buffer in this format: %s"%str_type)
+        #Malloc the c_array
+        try:
+            c_type = babel.c2stuff[str_type].c_type
+        except:
+            raise BytesWarning("Error: No C_type related to: %s"%str_type)
+        else:
+            c_array_type = ( c_type * length)
+            c_array = c_array_type()
+    
+        #Call the function
+        c_function(buffer,length,c_array)
+
+    else:
+
+        from ctypes import c_size_t
+        padding = int(str_type[5:-1])
+
+        #Get the C function
+        c_function = getattr(dll,"buffer2char")
+    
+        #Malloc the c_array
+        try:
+            c_type = babel.c2stuff[str_type].c_type
+            real_length = length*padding
+        except:
+            raise BytesWarning("Error: No C_type related to: %s"%str_type)
+        else:
+            c_array_type = ( c_type * real_length)
+            c_array = c_array_type()
+    
+        #Call the function
+        c_function(buffer, length,c_size_t(padding), c_array)
+
+
     errno = get_errno()
     try:
         message_template = d_erno[errno]
