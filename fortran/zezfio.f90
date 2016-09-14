@@ -13,18 +13,20 @@ module zezfio
 
 end module
 
-subroutine zezfio_initialize()
+subroutine zezfio_initialize(address)
    use zezfio, only: f77_zmq_ctx_new, f77_zmq_socket, f77_zmq_connect, &
       context, responder, ZMQ_REQ
    implicit none
 
-   character*(64) ::  address
-   integer        ::  rc
+   character*(128), optional       :: address
+   integer                         :: rc
 
-   call getenv("ZEZFIO_ADDRESS", address)
-   if ( len_trim(address) == 0 ) then
-      print*, "Please source $ZEZFIO_ADDRESS enviroment variable"
-      STOP 1
+   if (.not.present(address)) then
+      call getenv("ZEZFIO_ADDRESS", address)
+      if ( len_trim(address) == 0 ) then
+          print*, "Please source $ZEZFIO_ADDRESS enviroment variable"
+          STOP 1
+      endif
    endif
 
    context   = f77_zmq_ctx_new()

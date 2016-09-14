@@ -1,7 +1,7 @@
 subroutine ezfio_set_file(x)
   implicit none
   character*(*) :: x
-  call zezfio_initialize()
+  call zezfio_initialize(x)
 end
 
 {% for cat, attributes in json_config.iteritems() %}

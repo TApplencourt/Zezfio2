@@ -1,0 +1,9 @@
+*.pyc
+*.o
+*.so
+*.json
+*.a
+*.mod
+*.log
+*.swp
+f77_zmq.h
