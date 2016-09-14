@@ -22,7 +22,7 @@ subroutine zezfio_initialize()
    integer        ::  rc
 
    call getenv("ZEZFIO_ADDRESS", address)
-   if ( len_trim(address) == 0) then
+   if ( len_trim(address) == 0 ) then
       print*, "Please source $ZEZFIO_ADDRESS enviroment variable"
       STOP 1
    endif
@@ -63,12 +63,6 @@ function zezfio_has(msg,msg_size) result(zerrno)
    rc = f77_zmq_recv(responder,  zerrno,     4,         0)
 
 end function zezfio_has
-
-function func(i) result(j)
-   integer, intent(in) :: i ! input
-   integer             :: j ! output
-   j = i**2 + i**3
-end function func
 
 
 function zezfio_get(msg,msg_size,ptr_buffer) result(zerrno)
@@ -113,7 +107,7 @@ function zezfio_set(msg,msg_size,ptr_buffer,buffer_size) result(zerrno)
 
 end function zezfio_set
 
-function zezfio_size(msg,msg_size,buffer_size) result(zerrno)
+function zezfio_nbytes(msg,msg_size,buffer_size) result(zerrno)
    use zezfio, only: f77_zmq_send, f77_zmq_recv, responder, ZMQ_PTR, ZMQ_SNDMORE
    implicit none
 
@@ -129,4 +123,4 @@ function zezfio_size(msg,msg_size,buffer_size) result(zerrno)
    rc = f77_zmq_recv(responder,zerrno,4, 0)
    rc = f77_zmq_recv(responder,buffer_size,4, 0)
 
-end function zezfio_size
+end function zezfio_nbytes

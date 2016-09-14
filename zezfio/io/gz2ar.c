@@ -39,6 +39,7 @@ void buffer2char            (char * const, const size_t, const size_t, char * co
  *      |  ._ _  ._  |  _  ._ _   _  ._ _|_  _. _|_ o  _  ._  
  *     _|_ | | | |_) | (/_ | | | (/_ | | |_ (_|  |_ | (_) | | 
  *               |                                            
+ 
  */
 
 void gzip2buffer(const char * filename,
@@ -57,13 +58,15 @@ void gzip2buffer(const char * filename,
   }
 
   /* Extract */
-  const int bytes_uncompresed_read = gzread(file, buffer, bytes_expected-1);
-  if (!gzeof(file)) {
-    errno = 101;
-    return ;
-  }
+  {
+    const int bytes_uncompresed_read = gzread(file, buffer, bytes_expected-1);
+    if (!gzeof(file)) {
+      errno = 101;
+      return ;
+    }
 
-  buffer[bytes_uncompresed_read] = '\0';
+    buffer[bytes_uncompresed_read] = '\0';
+  }
 }
 
 size_t skip_lines(const char * buffer, const int number_of_line){
@@ -239,13 +242,15 @@ void buffer2bool_impur(char * const buffer, const size_t lines_supposed, int * c
 
         buffer[bytes_read] = '\0';
 
-        const int bool_read = atoi( & buffer[scalar_position]);
-        if ( !(bool_read == 0 || bool_read == 1) ) {
-          errno = 104;
-          return;
-        }
+        {
+          const int bool_read = atoi( & buffer[scalar_position]);
+          if ( !(bool_read == 0 || bool_read == 1) ) {
+            errno = 104;
+            return;
+          }
 
-        scalar_array[scalar_read] = bool_read;
+          scalar_array[scalar_read] = bool_read;
+        }
         scalar_read++;
 
         scalar_position = bytes_read + 1;
@@ -267,6 +272,7 @@ void buffer2char(char * const buffer, const size_t lines_supposed,const size_t p
   size_t size_string = 0;
   size_t offset = 0;
   size_t char_array_position = 0;
+  size_t i;
 
   while (buffer[bytes_read]) {
 
@@ -278,7 +284,7 @@ void buffer2char(char * const buffer, const size_t lines_supposed,const size_t p
 
     else{
 
-      for (size_t i=0; i<padding-size_string; i++, char_array_position++){
+      for (i=0; i<padding-size_string; i++, char_array_position++){
         char_array[char_array_position] = ' '; 
       }
       size_string = 0;

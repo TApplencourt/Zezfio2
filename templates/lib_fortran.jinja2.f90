@@ -10,17 +10,19 @@ end
 subroutine ezfio_set_{{cat}}_{{var.name}}(buffer)
    implicit none
    double precision, intent(out) :: buffer(*)
-   integer :: zezfio_set, zezfio_size
+   integer :: zezfio_set, zezfio_nbytes
    integer :: zerrno, buffer_size
 
-   zerrno   = zezfio_size("{{cat}}.{{var.name}}",len("{{cat}}.{{var.name}}"),buffer_size)
+   zerrno   = zezfio_nbytes("{{cat}}.{{var.name}}",len("{{cat}}.{{var.name}}"),buffer_size)
    if (zerrno < 0) then
-      STOP
+      print *,  'Errno < 0 in ezfio_set_{{cat}}_{{var.name}}: zezfio_nbytes'
+      STOP -1
    endif
 
    zerrno = zezfio_set("{{cat}}.{{var.name}}",len("{{cat}}.{{var.name}}"),buffer,buffer_size)
    if (zerrno < 0) then
-      STOP
+      print *,  'Errno < 0 in ezfio_set_{{cat}}_{{var.name}}: zezfio_set'
+      STOP -1
    endif
 
 end subroutine
@@ -34,7 +36,8 @@ subroutine ezfio_get_{{cat}}_{{var.name}}(buffer)
 
    zerrno = zezfio_get("{{cat}}.{{var.name}}",len("{{cat}}.{{var.name}}"),buffer)
    if (zerrno < 0) then
-      STOP
+      print *,  'Errno < 0 in ezfio_get_{{cat}}_{{var.name}}: zezfio_get'
+      STOP -1
    endif
 
 end subroutine
