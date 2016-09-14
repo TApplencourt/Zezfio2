@@ -26,11 +26,13 @@ void buffer2char            (char * const, const size_t, const size_t, char * co
  *     (/_ |  |  | | (_) 
  *                       
  */
-//d_erno = {100: "gzopen failed for {file}",
-//          101: "Your buffer size ({length} bytes) is to small for the uncompressed data for file {file}",
-//          102: "They are more value to read  (>{nb_scalar} asked)",
-//          103: "I read less value than asked (<{nb_scalar})",
-//          104: "Only 1 or 0 are convertible to bool"}
+/*
+  d_erno = {100: "gzopen failed for {file}",
+ *         101: "Your buffer size ({length} bytes) is to small for the uncompressed data for file {file}",
+ *         102: "They are more value to read  (>{nb_scalar} asked)",
+ *         103: "I read less value than asked (<{nb_scalar})",
+ *         104: "Only 1 or 0 are convertible to bool"}
+ */
 
 /***
  *     ___                   ./                                 
@@ -80,7 +82,7 @@ size_t skip_lines(const char * buffer, const int number_of_line){
     return bytes_read + 1;
 }
 
-//Start of copy pasta for int/long/double/float/"bool"
+/* Start of copy pasta for int/long/double/float/"bool" */
 void buffer2int_impur(char * const buffer, const size_t lines_supposed, int * const scalar_array){
 
   size_t bytes_read = skip_lines(buffer, 2);
