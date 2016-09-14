@@ -24,6 +24,7 @@ class {{ category|capitalize }}(object):
 
     @irpy.lazy_property
     def {{ variable.name }}_cbytes(self):
+        #array2size -> dimension2size
         return array2size('{{ variable.type }}', self.{{ variable.name }}_c)
 
         {% if variable.dimension == '1' %}

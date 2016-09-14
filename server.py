@@ -50,6 +50,7 @@ if __name__ == '__main__':
             #Get the info
             try:
                 m = recv()
+                print m
             except zmq.error.ZMQError:
                 raise
                 logging.error("Error when asking for a message")
@@ -97,6 +98,7 @@ if __name__ == '__main__':
             elif action == "get":
                 try:
                     size = getattr(instance, "%s_cbytes" % name)
+                    print "size", size
                     array = getattr(instance, "%s_c" % name)
                 except Exception as e:
                     logging.error(e)
