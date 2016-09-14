@@ -13,8 +13,8 @@ def strbool2int(b):
 #c_type is for allocate the array for the c binding
 Convert = namedtuple("Convert", ["str_size", "c_size", "c_type","py_array_code", "fortran_type", "str2py"])
 c2stuff = {
-    "bool"   :   Convert(16,  4,  c_int,    'i', "LOGICAL",          strbool2int ),
-    "int"    :   Convert(16,  4,  c_int,    'i', "INTEGER",          int         ),
+    "bool"   :   Convert(24,  4,  c_int,    'i', "LOGICAL",          strbool2int ),
+    "int"    :   Convert(24,  4,  c_int,    'i', "INTEGER",          int         ),
     "long"   :   Convert(24,  8,  c_long,   'l', "INTEGER*8",        int         ),
     "float"  :   Convert(24,  4,  c_float,  'f', "REAL",             float       ),
     "double" :   Convert(32,  8,  c_double, 'd', "DOUBLE PRECISION", float       ),

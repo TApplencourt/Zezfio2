@@ -19,10 +19,12 @@ d_erno = {100: "gzopen failed for {file}",
           104: "Only 1 or 0 are convertible to bool"}
 
 def gzip2buffer(file,length):
-    buffer_type = (c_char * length)
+    header = 200
+    bytes = header + length
+    buffer_type = (c_char * bytes)
     buffer = buffer_type()
 
-    dll.gzip2buffer(file,length,buffer)
+    dll.gzip2buffer(file,bytes,buffer)
     errno = get_errno()
 
     try:
