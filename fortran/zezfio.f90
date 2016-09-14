@@ -18,23 +18,26 @@ subroutine zezfio_initialize(address)
       context, responder, ZMQ_REQ
    implicit none
 
-   character*(128), optional       :: address
+   character(len=*), intent(in)    :: address
+   character*(128)                 :: ezfio_address
    integer                         :: rc
 
-   if (.not.present(address)) then
-      call getenv("ZEZFIO_ADDRESS", address)
-      if ( len_trim(address) == 0 ) then
+   if (len_trim(address) == 0 ) then
+      call getenv("ZEZFIO_ADDRESS", ezfio_address)
+      if ( len_trim(ezfio_address) == 0 ) then
           print*, "Please source $ZEZFIO_ADDRESS enviroment variable"
           STOP 1
       endif
+   else
+      ezfio_address = address
    endif
 
    context   = f77_zmq_ctx_new()
    responder = f77_zmq_socket(context, ZMQ_REQ)
-   rc        = f77_zmq_connect(responder,address)
+   rc        = f77_zmq_connect(responder,ezfio_address)
 
    if ( rc == -1 ) then
-      print*, "Cannot connect to the server located at ",address
+      print*, "Cannot connect to the server located at ",ezfio_address
       STOP 1
    endif
 
