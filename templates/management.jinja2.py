@@ -2,16 +2,12 @@ import irpy
 
 from zezfio.io import zarray
 from zezfio.io import zscalar
+from zezfio import babel
 from zezfio.io.__init__ import build_path
 
 d_instance = dict()
 from ctypes import c_int
 d_instance["zezfio_id"] = c_int(0)
-
-
-
-from zezfio import babel
-
 
 def update_zezfio_id():
     d_instance["zezfio_id"] = c_int(d_instance["zezfio_id"].value + 1)
@@ -30,27 +26,29 @@ class {{ category|capitalize }}(object):
 
     @irpy.lazy_property
     def {{ variable.name }}(self):
-            {% if variable.default is not defined %}
-        return zscalar.db2py(self.{{ variable.name }}_path,'{{ variable.type }}')
-            {% else %}
-        return {{ variable.default }}
-            {% endif %}
+        {# This value need to depend of _interface          #}
+        {# because it can used to define the size of arrays #}
+        return babel.buffer_interface2py(self.{{ variable.name }}_interface)
 
     @irpy.lazy_property_mutable
     def {{ variable.name }}_interface(self):
-        return babel.py2interface('{{ variable.type }}',self.{{ variable.name }})
+            {% if variable.default is not defined %}
+        data = zscalar.db2py(self.{{ variable.name }}_path,'{{ variable.type }}')
+            {% else %}
+        data = {{ variable.default }}
+            {% endif %}
+
+        return babel.py2interface('{{ variable.type }}',data)
 
     @irpy.lazy_property
     def {{ variable.name }}_bytes_interface(self):
         return babel.nele2bytes_interface('{{ variable.type }}')
 
-
     def set_{{ variable.name }}(self,bytes):
 
         data_interface = babel.bytes2interface('{{ variable.type }}', bytes)
         self.{{ variable.name }}_interface = data_interface
-
-        zscalar.interface2db(self.{{ variable.name }}_path,self.{{ variable.name }}_interface)
+        zscalar.interface2db(self.{{ variable.name }}_path,data_interface)
 
         update_zezfio_id()
 
@@ -70,7 +68,11 @@ class {{ category|capitalize }}(object):
 
     @irpy.lazy_property_mutable
     def {{ variable.name }}_interface(self):
-        return zarray.db2interface(self.{{variable.name}}_path,'{{ variable.type }}',self.{{ variable.name }}_nele)
+        {# IRPy bug /!\                                                   #}
+        {# Beacause db2interface is the C function,                       #}
+        {# we need to tell explicity that _interface is dependant of _nele#}
+        nele = self.{{ variable.name }}_nele
+        return zarray.db2interface(self.{{variable.name}}_path,'{{ variable.type }}', nele)
 
     @irpy.lazy_property
     def {{ variable.name }}(self):
@@ -93,14 +95,11 @@ class {{ category|capitalize }}(object):
         self.{{ variable.name }}_interface = data_interface
 
         zarray.interface2db(self.{{ variable.name }}_path,self.{{ variable.name }}_shape,
-                            '{{ variable.type }}',self.{{ variable.name }}_interface)
+                            '{{ variable.type }}',data_interface)
 
         update_zezfio_id()
 
         {% endif %}
-
-
-
     {% endfor %}
 
 #For allowing referance in shape

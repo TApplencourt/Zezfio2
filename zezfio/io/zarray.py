@@ -89,7 +89,7 @@ def db2interface(path,t_interface,nele):
         dlen = babel.shape2nele(shape)
 
     if dlen != nele:
-        raise BytesWarning("Error: Asked number of element (%s) and these on header on file are different (%s)"%(slen,nele))
+        raise BytesWarning("Error: Asked number of element (%s) and these on header on file are different (%s)"%(dlen,nele))
 
     try:
         str_length = nele * babel.c2stuff[t_interface].str_size
