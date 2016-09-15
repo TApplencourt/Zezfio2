@@ -13,11 +13,11 @@ def read_scalar(path,type_):
     except KeyError:
         raise TypeError, "Error: cannot convert str to %s" % type_
     
-    padding = babel.is_char(str_type)
+    padding = babel.is_char(type_)
     if not padding:
         py_data = f(data)
     else:
-        py_data = data.f(padding)
+        py_data = f(data,padding)
 
     #Python -> C_type
     try:

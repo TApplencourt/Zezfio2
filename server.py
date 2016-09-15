@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import zmq
 import logging
+
 if __name__ == '__main__':
     #                         
     # |  _   _   _  o ._   _  
@@ -50,22 +51,20 @@ if __name__ == '__main__':
             #Get the info
             try:
                 m = recv()
-                print m
             except zmq.error.ZMQError:
-                raise
-                logging.error("Error when asking for a message")
+                logging.exception("Error when asking for a message")
                 continue
 
             try:
                 action, str_instance, name = m.split(".")
             except:
-                logging.error("Error when spliting the message %s"%m)
+                logging.exception("Error when spliting the message %s"%m)
                 continue
 
             try:
                 instance = d_instance[str_instance]
             except Exception as e:
-                logging.error("Cannot get %s category" % str_instance)
+                logging.exception("Cannot get %s category" % str_instance)
                 send(errno_fail)
                 continue
 
@@ -75,7 +74,7 @@ if __name__ == '__main__':
                 try:
                     getattr(instance, name)
                 except Exception as e:
-                    logging.error(e)
+                    logging.exception(e)
                     send(errno_fail)
                     continue
                 else:
@@ -98,10 +97,9 @@ if __name__ == '__main__':
             elif action == "get":
                 try:
                     size = getattr(instance, "%s_cbytes" % name)
-                    print "size", size
                     array = getattr(instance, "%s_c" % name)
                 except Exception as e:
-                    logging.error(e)
+                    logging.exception(e)
                     send(errno_fail)
                     continue
                 else:
@@ -113,13 +111,13 @@ if __name__ == '__main__':
                 try:
                     bytes = recv()
                 except zmq.error.ZMQError:
-                    logging.error("Error when reading the byte for the set")
+                    logging.exception("Error when reading the byte for the set")
                     continue
 
                 try:
                     getattr(instance, "set_%s" % name)(bytes)
                 except Exception as e:
-                    logging.error(e)
+                    logging.exception(e)
                     send(errno_fail)
                     continue
                 else:

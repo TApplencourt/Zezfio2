@@ -17,18 +17,21 @@ c2stuff = {
     "int"    :   Convert(24,  4,  c_int,    'i', "INTEGER",          int         ),
     "long"   :   Convert(24,  8,  c_long,   'l', "INTEGER*8",        int         ),
     "float"  :   Convert(24,  4,  c_float,  'f', "REAL",             float       ),
-    "double" :   Convert(32,  8,  c_double, 'd', "DOUBLE PRECISION", float       ),
-    "char"   :   Convert()
+    "double" :   Convert(32,  8,  c_double, 'd', "DOUBLE PRECISION", float       )
 }
+
+
+def ljust2(str_,padding):
+  return str_.ljust(padding)
+
 for i in range(3000):
-  c2stuff["char[%d]"%i] = Convert(i+1,i,c_char,'c', "CHARACTER*(%d)"%i, ljust)
+  c2stuff["char[%d]"%i] = Convert(i+1,i,c_char,'c', "CHARACTER*(%d)"%i, ljust2)
 
 def is_char(str_type):
   if "char[" in str_type:
     return int(str_type[5:-1])
   else:
     return 0
-
 
 import array
 def bytes2array(ctypes,bytes):
