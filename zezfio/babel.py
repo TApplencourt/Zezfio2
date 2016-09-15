@@ -18,9 +18,16 @@ c2stuff = {
     "long"   :   Convert(24,  8,  c_long,   'l', "INTEGER*8",        int         ),
     "float"  :   Convert(24,  4,  c_float,  'f', "REAL",             float       ),
     "double" :   Convert(32,  8,  c_double, 'd', "DOUBLE PRECISION", float       ),
+    "char"   :   Convert()
 }
-#for i in range(3000):
-#  c2stuff["char[%d]"%i] = Convert(i+1,i,c_char,'c', "CHARACTER*(%d)"%i, i)
+for i in range(3000):
+  c2stuff["char[%d]"%i] = Convert(i+1,i,c_char,'c', "CHARACTER*(%d)"%i, ljust)
+
+def is_char(str_type):
+  if "char[" in str_type:
+    return int(str_type[5:-1])
+  else:
+    return 0
 
 
 import array

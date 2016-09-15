@@ -38,7 +38,8 @@ def gzip2buffer(file,length):
 #This function is IMPUR !!! Buffer will be modify !
 def buffer2stuff_impur(str_type,buffer,length):
 
-    if not "char[" in str_type:
+    padding = babel.is_char(str_type)
+    if not padding:
 
         #Get the C function
         try:
@@ -58,9 +59,6 @@ def buffer2stuff_impur(str_type,buffer,length):
         c_function(buffer,length,c_array)
 
     else:
-
-        from ctypes import c_size_t
-        padding = int(str_type[5:-1])
 
         #Get the C function
         c_function = getattr(dll,"buffer2char")

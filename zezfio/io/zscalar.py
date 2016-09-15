@@ -1,6 +1,5 @@
 from zezfio import babel
 import array
-import os
 
 def read_scalar(path,type_):
     "Return array c_type"
@@ -13,11 +12,12 @@ def read_scalar(path,type_):
         f = babel.c2stuff[type_].str2py
     except KeyError:
         raise TypeError, "Error: cannot convert str to %s" % type_
+    
+    padding = babel.is_char(str_type)
+    if not padding:
+        py_data = f(data)
     else:
-        try:
-            py_data = f(data)
-        except TypeError:   # for strings
-            py_data = data.ljust(f)
+        py_data = data.f(padding)
 
     #Python -> C_type
     try:
@@ -25,10 +25,11 @@ def read_scalar(path,type_):
     except KeyError:
         raise TypeError, "Error: cannot convert %s to %s" % (py_data, type_)
 
-    if code == 'c':
-      result = array.array(code,py_data)
-    else:
+    if not padding:
       result = array.array(code,[py_data])
+    else:
+      result = array.array(code,py_data)
+
     return result
 
 def write_scalar(path, py_scalar):
