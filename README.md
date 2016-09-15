@@ -16,13 +16,13 @@ You can use [pip](https://pip.pypa.io/en/stable/installing/) all the Python Depe
 
 1) C and Config
 ```bash
-$ cd zezfio/io ; make; cd .. #Make the C file
+$ make -C zezfio/io  #Make the C file
 $ ./legacy2json.py ../install/EZFIO/config/* > config.json #Create the config file
 ```
 2) Fortran
 ```bash
-$ cd fortran
 $ ./fang.py x.json > fortran/ezfio.f90 #Create fortran file who contain the ezfio API
+$ cd fortran
 $ cp $QP_ROOT/install/_build/f77_zmq-master/f77_zmq.h . #Copy the f77_zmq.h for simplicity
 $ gfortran -O2 -g -ffree-line-length-none -fPIC -c *.f90 #Compile
 $ ar crv libezfio.a ezfio.o zezfio.o  #Create the library
