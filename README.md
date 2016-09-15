@@ -10,7 +10,7 @@ The lovely client/server version of [Ezfio](http://irpf90.ups-tlse.fr/index.php?
 - [f77_zmq](https://github.com/zeromq/f77_zmq)
 
 You can use [pip](https://pip.pypa.io/en/stable/installing/) all the Python Dependencies and 
-- `pip install jinja2 pyzmq`
+- `pip install irpy jinja2 pyzmq`
 
 # Boilerplate
 
