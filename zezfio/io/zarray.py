@@ -100,10 +100,10 @@ def read_array(path,str_type,slen):
         dlen = reduce(mul,map(int,f.readline().split()))
 
     if dlen != slen:
-        raise BytesWarning("Error: Asked dimension (%s) and file one are different (%s)"%(slen,dlen))
+        raise BytesWarning("Error: Asked dimension (%s) and these on header on file are different (%s)"%(slen,dlen))
 
     try:
-        str_length = slen * babel.c2stuff[str_type].str_size
+        str_length = slen * babel.c2stuff[str_type].str_size + 200
     except KeyError:
         raise TypeError("Error: No size for to %s" % str_type)
     else:

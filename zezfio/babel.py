@@ -19,8 +19,8 @@ c2stuff = {
     "float"  :   Convert(24,  4,  c_float,  'f', "REAL",             float       ),
     "double" :   Convert(32,  8,  c_double, 'd', "DOUBLE PRECISION", float       ),
 }
-for i in range(3000):
-  c2stuff["char[%d]"%i] = Convert(i+1,i,c_char,'c', "CHARACTER*(%d)"%i, i)
+#for i in range(3000):
+#  c2stuff["char[%d]"%i] = Convert(i+1,i,c_char,'c', "CHARACTER*(%d)"%i, i)
 
 
 import array
