@@ -72,7 +72,7 @@ if __name__ == '__main__':
             if action == "has":
 
                 try:
-                    getattr(instance, name)
+                    getattr(instance,"%s_interface" % name)
                 except Exception as e:
                     logging.exception(e)
                     send(errno_fail)
@@ -84,7 +84,7 @@ if __name__ == '__main__':
             elif action == "size":
 
                 try:
-                    size = getattr(instance, "%s_cbytes" % name)
+                    size = getattr(instance, "%s_bytes_interface" % name)
                 except Exception as e:
                     logging.error(e)
                     send(errno_fail)
@@ -96,8 +96,8 @@ if __name__ == '__main__':
 
             elif action == "get":
                 try:
-                    size = getattr(instance, "%s_cbytes" % name)
-                    array = getattr(instance, "%s_c" % name)
+                    size = getattr(instance, "%s_bytes_interface" % name)
+                    array = getattr(instance, "%s_interface" % name)
                 except Exception as e:
                     logging.exception(e)
                     send(errno_fail)

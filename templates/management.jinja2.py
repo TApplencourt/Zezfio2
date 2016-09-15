@@ -9,8 +9,8 @@ from ctypes import c_int
 d_instance["zezfio_id"] = c_int(0)
 
 
-from operator import mul
-from zezfio.babel import len2bytes, bytes2array, py2array
+
+from zezfio import babel
 
 
 def update_zezfio_id():
@@ -26,78 +26,81 @@ class {{ category|capitalize }}(object):
 
     @irpy.lazy_property
     def {{ variable.name }}_path(self):
-        return build_path('{{db_path}}','{{ category }}','{{ variable.name }}')
+        return build_path('{{db_path}}','{{ category }}','{{ variable.name }}',array=False)
 
     @irpy.lazy_property
-    def {{ variable.name }}(self):
-       {% if variable.default is not defined %}
-           return zscalar.db2py(self.{{variable.name}}_path,'{{ variable.type }}')
-       {% else %}
-           return {{ variable.default }}
-       {% endif %}
+    def {{ variable.name }}(self):
+            {% if variable.default is not defined %}
+        return zscalar.db2py(self.{{ variable.name }}_path,'{{ variable.type }}')
+            {% else %}
+        return {{ variable.default }}
+            {% endif %}
 
     @irpy.lazy_property_mutable
-    def {{ variable.name }}_c(self):
-        return py2array('{{ variable.type }}',self.{{ variable.name }})
+    def {{ variable.name }}_interface(self):
+        return babel.py2interface('{{ variable.type }}',self.{{ variable.name }})
 
     @irpy.lazy_property
-    def {{ variable.name }}_cbytes(self):
-        return len2bytes('{{ variable.type }}')
+    def {{ variable.name }}_bytes_interface(self):
+        return babel.nele2bytes_interface('{{ variable.type }}')
+
 
     def set_{{ variable.name }}(self,bytes):
 
-        c_array = bytes2array('{{ variable.type }}', bytes)
+        data_interface = babel.bytes2interface('{{ variable.type }}', bytes)
+        self.{{ variable.name }}_interface = data_interface
 
-        self.{{ variable.name }}_c = c_array
-        zscalar.write_scalar(self.{{ variable.name }}_path,self.{{ variable.name }})
+        zscalar.interface2db(self.{{ variable.name }}_path,self.{{ variable.name }}_interface)
 
         update_zezfio_id()
 
         {% else %}
+
     @irpy.lazy_property_mutable
     def {{ variable.name }}_shape(self):
         return {{variable.dimension}}
 
     @irpy.lazy_property
-    def {{ variable.name }}_slen(self):
-        return reduce(mul, self.{{ variable.name }}_shape)
-
-    @irpy.lazy_property
-    def {{ variable.name }}_cbytes(self):
-        return len2bytes('{{ variable.type }}',self.{{ variable.name }}_slen)
+    def {{ variable.name }}_nele(self):
+        return babel.shape2nele(self.{{ variable.name }}_shape)
 
     @irpy.lazy_property
     def {{ variable.name }}_path(self):
         return build_path('{{db_path}}','{{ category }}','{{ variable.name }}',array=True)
 
     @irpy.lazy_property_mutable
-    def {{ variable.name }}_c(self):
-        return zarray.read_array(self.{{variable.name}}_path,'{{ variable.type }}',self.{{ variable.name }}_slen)
+    def {{ variable.name }}_interface(self):
+        return zarray.db2interface(self.{{variable.name}}_path,'{{ variable.type }}',self.{{ variable.name }}_nele)
 
     @irpy.lazy_property
-    def {{ variable.name }}(self):
-        c_data = self.{{ variable.name}}_c
-        return [c_data[i] for i in range(self.{{ variable.name }}_slen)]
+    def {{ variable.name }}(self):
+        return babel.buffer_interface2py(self.{{ variable.name }}_interface, nele=self.{{ variable.name }}_nele)
+
+    @irpy.lazy_property
+    def {{ variable.name }}_bytes_interface(self):
+        return babel.nele2bytes_interface('{{ variable.type }}',self.{{ variable.name }}_nele)
+
 
     def set_{{ variable.name }}(self,bytes):
 
         sbytes = len(bytes)
-        theobytes = self.{{ variable.name }}_cbytes.value
+        theobytes = self.{{ variable.name }}_bytes_interface.value
 
         if  sbytes != theobytes:
             raise IndexError("Conflic between the spec bytes of the array %i and the given one %i" % (sbytes, theobytes))       
 
-        c_array = bytes2array('{{ variable.type }}', bytes)
+        data_interface = babel.bytes2interface('{{ variable.type }}', bytes)
+        self.{{ variable.name }}_interface = data_interface
 
-        self.{{ variable.name }}_c = c_array
-        zarray.write_array(self.{{ variable.name }}_path,
-                           self.{{ variable.name }}_shape, 
-                           self.{{ variable.name }})
-
+        zarray.interface2db(self.{{ variable.name }}_path,self.{{ variable.name }}_shape,
+                            '{{ variable.type }}',self.{{ variable.name }}_interface)
 
         update_zezfio_id()
 
         {% endif %}
+
+
+
     {% endfor %}
 
 #For allowing referance in shape
