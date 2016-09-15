@@ -44,9 +44,6 @@ def bytes2array(ctypes,bytes):
   c_array = array.array(code,bytes)
   return c_array
 
-def array2size(ctypes,carray):
-  return c_int(len(carray)*c2stuff[ctypes].c_size)
-
 def len2bytes(ctypes,len_=1):
   return c_int(c2stuff[ctypes].c_size*len_)
 

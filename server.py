@@ -22,8 +22,8 @@ if __name__ == '__main__':
     # |_|  _. ._   _| |  _     _  _  ._ _|_ o  _  
     # | | (_| | | (_| | (/_   (_ (_) | | |  | (_| 
     #                                          _|
-    from zezfio import template_generator
-    d_instance = template_generator.get_dict_module_server(path_config,db_path)
+    from zezfio import generator
+    d_instance = generator.get_dict_module_server(path_config,db_path)
 
     #  __                 
     # (_   _  ._    _  ._ 
