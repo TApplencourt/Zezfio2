@@ -20,22 +20,23 @@ c2stuff = {
     "double" :   Convert(32,  8,  c_double, 'd', "DOUBLE PRECISION", float       )
 }
 
-def ljust2(str_):
-  return str_.ljust(int(str_type[5:-1]))
+
+def ljust2(str_,ctypes):
+  padding = int(ctypes[5:-1])
+  return str_.ljust(padding)
 
 for i in range(3000):
   c2stuff["char[%d]"%i] = Convert(i+1,i,c_char,'c', "CHARACTER*(%d)"%i, ljust2)
 
-def is_char(str_type):
-  if "char[" in str_type:
+def is_char(ctypes):
+  if "char[" in ctypes:
     return True
   else:
     return False
 
 import array
 def bytes2array(ctypes,bytes):
-  
-  padding = is_char(ctypes)
+
   try:
     code = c2stuff[ctypes].py_array_code
   except KeyError:
@@ -43,6 +44,22 @@ def bytes2array(ctypes,bytes):
 
   c_array = array.array(code,bytes)
   return c_array
+
+
+def py2array(ctypes,ptype):
+
+  try:
+    code = c2stuff[ctypes].py_array_code
+  except KeyError:
+    raise KeyError("Cannot convert %s into array"%ctypes) 
+
+  if  (type(ptype) == str or type(ptype) == list):
+    c_array = array.array(code,ptype)
+  else:
+    c_array = array.array(code,[ptype])
+
+  return c_array
+
 
 def len2bytes(ctypes,len_=1):
   return c_int(c2stuff[ctypes].c_size*len_)

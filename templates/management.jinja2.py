@@ -10,7 +10,7 @@ d_instance["zezfio_id"] = c_int(0)
 
 
 from operator import mul
-from zezfio.babel import len2bytes, bytes2array
+from zezfio.babel import len2bytes, bytes2array, py2array
 
 
 def update_zezfio_id():
@@ -28,13 +28,17 @@ class {{ category|capitalize }}(object):
     def {{ variable.name }}_path(self):
         return build_path('{{db_path}}','{{ category }}','{{ variable.name }}')
 
-    @irpy.lazy_property_mutable
-    def {{ variable.name }}_c(self):
-        return zscalar.read_scalar(self.{{variable.name}}_path,'{{ variable.type }}')
-
     @irpy.lazy_property
     def {{ variable.name }}(self):
-        return self.{{variable.name}}_c[0]
+       {% if variable.default is not defined %}
+           return zscalar.db2py(self.{{variable.name}}_path,'{{ variable.type }}')
+       {% else %}
+           return {{ variable.default }}
+       {% endif %}
+
+    @irpy.lazy_property_mutable
+    def {{ variable.name }}_c(self):
+        return py2array('{{ variable.type }}',self.{{ variable.name }})
 
     @irpy.lazy_property
     def {{ variable.name }}_cbytes(self):
