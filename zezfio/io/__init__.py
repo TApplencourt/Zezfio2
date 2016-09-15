@@ -7,7 +7,5 @@ def build_path(root_path,category,raw_name,array=False):
         name = raw_name
 
     path = os.path.join(root_path, category.lower(), name.lower())
-    if not os.path.isfile(path):
-        raise IOError("%s doesn't exist" % path)
 
     return path

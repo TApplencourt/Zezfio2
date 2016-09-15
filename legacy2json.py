@@ -47,6 +47,8 @@ def one_dwarf(path):
                 info["type"] = type_fortran2c(l_var[1])
                 info["dimension"] = "1"
                 info["default"] = l_var[2]
+                info["default"] = info["default"].replace("maxval","max")
+                info["default"] = info["default"].replace("minval","min")
         
             l_attribute.append(info)
         
