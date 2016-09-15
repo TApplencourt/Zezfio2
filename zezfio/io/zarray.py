@@ -39,8 +39,7 @@ def gzip2buffer(file,bytes,header_bytes=200):
 #This function is IMPUR !!! Buffer will be modify !
 def buffer2stuff_impur(str_type,buffer,length):
 
-    padding = babel.is_char(str_type)
-    if not padding:
+    if not babel.is_char(str_type):
 
         #Get the C function
         try:
@@ -66,17 +65,18 @@ def buffer2stuff_impur(str_type,buffer,length):
         #Malloc the c_array
         try:
             c_type = babel.c2stuff[str_type].c_type
-            padding = babel.c2stuff[str_type].c_size
+            char_size = babel.c2stuff[str_type].c_size
+
+            real_length = length*char_size
         except:
             raise BytesWarning("Error: No C_type related to: %s"%str_type)
         else:
-            real_length = length*padding
             c_array_type = ( c_type * real_length)
             c_array = c_array_type()
     
         #Call the function
         from ctypes import c_size_t
-        c_function(buffer, length,c_size_t(padding), c_array)
+        c_function(buffer, length,c_size_t(char_size), c_array)
 
     check_errno()
 
@@ -111,7 +111,13 @@ def write_array(path,shape,py_data):
         header = [str(len(shape)), 
                   "  ".join(map(str,shape))]
 
-        lstr = map(str,py_data)
+        if type(py_data[0]) != str:
+            lstr = map(str,py_data)        
+    
+        else:
+            lstr = [str(i) if i!='\x00' else '\n' for i in py_data]
+            lstr = ["".join(lstr)]
 
         with gzip.open(path, 'w') as f:
             f.write("%s\n" % "\n".join(header+lstr))
+

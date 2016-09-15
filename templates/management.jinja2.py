@@ -10,7 +10,7 @@ d_instance["zezfio_id"] = c_int(0)
 
 
 from operator import mul
-from zezfio.babel import array2size, bytes2array
+from zezfio.babel import len2bytes, bytes2array
 
 
 def update_zezfio_id():
@@ -21,11 +21,6 @@ def update_zezfio_id():
 class {{ category|capitalize }}(object):
 
     {% for variable in attributes["attributes"] %}
-
-    @irpy.lazy_property
-    def {{ variable.name }}_cbytes(self):
-        #array2size -> dimension2size
-        return array2size('{{ variable.type }}', self.{{ variable.name }}_c)
 
         {% if variable.dimension == '1' %}
 
@@ -40,6 +35,10 @@ class {{ category|capitalize }}(object):
     @irpy.lazy_property
     def {{ variable.name }}(self):
         return self.{{variable.name}}_c[0]
+
+    @irpy.lazy_property
+    def {{ variable.name }}_cbytes(self):
+        return len2bytes('{{ variable.type }}')
 
     def set_{{ variable.name }}(self,bytes):
 
@@ -60,6 +59,10 @@ class {{ category|capitalize }}(object):
         return reduce(mul, self.{{ variable.name }}_shape)
 
     @irpy.lazy_property
+    def {{ variable.name }}_cbytes(self):
+        return len2bytes('{{ variable.type }}',self.{{ variable.name }}_slen)
+
+    @irpy.lazy_property
     def {{ variable.name }}_path(self):
         return build_path('{{db_path}}','{{ category }}','{{ variable.name }}',array=True)
 
@@ -74,13 +77,13 @@ class {{ category|capitalize }}(object):
 
     def set_{{ variable.name }}(self,bytes):
 
+        sbytes = len(bytes)
+        theobytes = self.{{ variable.name }}_cbytes.value
+
+        if  sbytes != theobytes:
+            raise IndexError("Conflic between the spec bytes of the array %i and the given one %i" % (sbytes, theobytes))       
+
         c_array = bytes2array('{{ variable.type }}', bytes)
-
-        slen = self.{{ variable.name }}_slen
-        sgiven = len(c_array) 
-        if  slen != sgiven:
-            raise IndexError("Conflic between the spec len of the array %i and the given one %i" % (slen, sgiven))       
-
 
         self.{{ variable.name }}_c = c_array
         zarray.write_array(self.{{ variable.name }}_path,
