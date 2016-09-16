@@ -12,8 +12,8 @@ from ctypes import c_char
 
 d_erno = {100: "gzopen failed for {file}",
           101: "Your buffer size is to small for the uncompressed data for file {file}",
-          102: "They are more value to read than (>{length} asked)",
-          103: "I read less value than asked (<{length})",
+          102: "There are more values to read than (>{length} asked)",
+          103: "I have read less values than requested (<{length})",
           104: "Only 1 or 0 are convertible to bool"}
 
 def check_errno():
@@ -37,14 +37,14 @@ def gzip2buffer(file,bytes,header_bytes=200):
     if check_errno():
         return buffer
 
-#This function is IMPUR !!! Buffer will be modify !
-def buffer2stuff_impur(t_interface,buffer,length):
+#This function is IMPURE !!! Buffer will be modified !
+def buffer2stuff_impure(t_interface,buffer,length):
 
     if not babel.is_char(t_interface):
 
         #Get the C function
         try:
-            c_function = getattr(dll,"buffer2%s_impur"%t_interface)
+            c_function = getattr(dll,"buffer2%s_impure"%t_interface)
         except AttributeError:
             raise BytesWarning("Error: No C function to convert your buffer in this format: %s"%t_interface)
         #Malloc the c_array
@@ -89,16 +89,16 @@ def db2interface(path,t_interface,nele):
         dlen = babel.shape2nele(shape)
 
     if dlen != nele:
-        raise BytesWarning("Error: Asked number of element (%s) and these on header on file are different (%s)"%(dlen,nele))
+        raise BytesWarning("Error: Asked number of elements (%s) different from the file header (%s)"%(dlen,nele))
 
     try:
         str_length = nele * babel.c2stuff[t_interface].str_size
     except KeyError:
-        raise TypeError("Error: No size for to %s" % t_interface)
+        raise TypeError("Error: No size for %s" % t_interface)
     else:
         buffer = gzip2buffer(path,str_length)
 
-    return buffer2stuff_impur(t_interface,buffer,nele) 
+    return buffer2stuff_impure(t_interface,buffer,nele) 
 
 
 #Need to be and array or a string

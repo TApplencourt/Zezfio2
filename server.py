@@ -58,13 +58,13 @@ if __name__ == '__main__':
             try:
                 action, str_instance, name = m.split(".")
             except:
-                logging.exception("Error when spliting the message %s"%m)
+                logging.exception("Error when splitting the message %s"%m)
                 continue
 
             try:
                 instance = d_instance[str_instance]
             except Exception as e:
-                logging.exception("Cannot get %s category" % str_instance)
+                logging.exception("Cannot get the %s category" % str_instance)
                 send(errno_fail)
                 continue
 
@@ -111,7 +111,7 @@ if __name__ == '__main__':
                 try:
                     bytes = recv()
                 except zmq.error.ZMQError:
-                    logging.exception("Error when reading the byte for the set")
+                    logging.exception("Error when reading the number of bytes in set")
                     continue
 
                 try:
@@ -126,5 +126,5 @@ if __name__ == '__main__':
                     logging.debug("Set Done. Errno is %s" % errno_success.value)
 
             else:
-                logging.error("Cannot understant theaction to do %s"%action)
+                logging.error("Cannot understand the action to do %s"%action)
                 continue

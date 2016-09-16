@@ -13,11 +13,11 @@
 
 void gzip2buffer            (const char *, const size_t, char * const);
 size_t skip_lines           (const char * buffer, const int);
-void buffer2int_impur       (char * const, const size_t, int    * const);
-void buffer2long_impur      (char * const, const size_t, long   * const);
-void buffer2double_impur    (char * const, const size_t, double * const);
-void buffer2float_impur     (char * const, const size_t, float  * const);
-void buffer2bool_impur      (char * const, const size_t, int    * const);
+void buffer2int_impure      (char * const, const size_t, int    * const);
+void buffer2long_impure     (char * const, const size_t, long   * const);
+void buffer2double_impure   (char * const, const size_t, double * const);
+void buffer2float_impure    (char * const, const size_t, float  * const);
+void buffer2bool_impure     (char * const, const size_t, int    * const);
 void buffer2char            (char * const, const size_t, const size_t, char * const);
 
 /***
@@ -29,8 +29,8 @@ void buffer2char            (char * const, const size_t, const size_t, char * co
 /*
   d_erno = {100: "gzopen failed for {file}",
  *         101: "Your buffer size ({length} bytes) is to small for the uncompressed data for file {file}",
- *         102: "They are more value to read  (>{nb_scalar} asked)",
- *         103: "I read less value than asked (<{nb_scalar})",
+ *         102: "There are more values to read  (>{nb_scalar} asked)",
+ *         103: "I have read less values than requested (<{nb_scalar})",
  *         104: "Only 1 or 0 are convertible to bool"}
  */
 
@@ -86,7 +86,7 @@ size_t skip_lines(const char * buffer, const int number_of_line){
 }
 
 /* Start of copy pasta for int/long/double/float/"bool" */
-void buffer2int_impur(char * const buffer, const size_t lines_supposed, int * const scalar_array){
+void buffer2int_impure(char * const buffer, const size_t lines_supposed, int * const scalar_array){
 
   size_t bytes_read = skip_lines(buffer, 2);
 
@@ -120,7 +120,7 @@ void buffer2int_impur(char * const buffer, const size_t lines_supposed, int * co
   return;
 }
 
-void buffer2long_impur(char * const buffer, const size_t lines_supposed, long * const scalar_array){
+void buffer2long_impure(char * const buffer, const size_t lines_supposed, long * const scalar_array){
 
   size_t bytes_read = skip_lines(buffer, 2);
 
@@ -154,7 +154,7 @@ void buffer2long_impur(char * const buffer, const size_t lines_supposed, long * 
   return;
 }
 
-void buffer2double_impur(char * const buffer, const size_t lines_supposed, double * const scalar_array){
+void buffer2double_impure(char * const buffer, const size_t lines_supposed, double * const scalar_array){
 
   size_t bytes_read = skip_lines(buffer, 2);
 
@@ -188,7 +188,7 @@ void buffer2double_impur(char * const buffer, const size_t lines_supposed, doubl
   return;
 }
 
-void buffer2float_impur(char * const buffer, const size_t lines_supposed, float * const scalar_array){
+void buffer2float_impure(char * const buffer, const size_t lines_supposed, float * const scalar_array){
 
   size_t bytes_read = skip_lines(buffer, 2);
 
@@ -222,7 +222,7 @@ void buffer2float_impur(char * const buffer, const size_t lines_supposed, float 
   return;
 }
 
-void buffer2bool_impur(char * const buffer, const size_t lines_supposed, int * const scalar_array){
+void buffer2bool_impure(char * const buffer, const size_t lines_supposed, int * const scalar_array){
 
   size_t bytes_read = skip_lines(buffer, 2);
 

@@ -88,5 +88,5 @@ def type_fortran2c(t_fortran):
     for ctype, t in c2stuff.iteritems():
         if t_fortran.lower() == t.fortran_type.lower():
             return ctype
-    raise AttributeError, "Not C type for Fortran type: %s" % t_fortran
+    raise AttributeError, "No C type for Fortran type: %s" % t_fortran
 
