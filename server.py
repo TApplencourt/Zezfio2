@@ -2,6 +2,11 @@
 import zmq
 import logging
 
+ import socket
+def get_ip_address():
+ return socket.gethostname()
+
+
 if __name__ == '__main__':
     #                         
     # |  _   _   _  o ._   _  
@@ -31,8 +36,12 @@ if __name__ == '__main__':
     #
     context = zmq.Context(io_threads=4)
     sock = context.socket(zmq.REP)
+
+    #IPC Adress
     sock.bind(address)
 
+    #Random tcp
+    tcp_port_selected = sock.bind_to_random_port('tcp://*', min_port=6001, max_port=6004, max_tries=100)
     # ~#~#~#~#
     # Little_optimisation
     # ~#~#~#~#
@@ -53,6 +62,10 @@ if __name__ == '__main__':
                 m = recv()
             except zmq.error.ZMQError:
                 logging.exception("Error when asking for a message")
+                continue
+
+            if m == "get_tcp":
+                send("tcp://%s:%s" %(get_ip_address(),tcp_port_selected))
                 continue
 
             try:
