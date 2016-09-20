@@ -84,7 +84,7 @@ if __name__ == '__main__':
             elif action == "size":
 
                 try:
-                    size = getattr(instance, "%s_bytes_interface" % name)
+                    size = getattr(instance, "%s_len_interface" % name)
                 except Exception as e:
                     logging.error(e)
                     send(errno_fail)
@@ -96,7 +96,7 @@ if __name__ == '__main__':
 
             elif action == "get":
                 try:
-                    size = getattr(instance, "%s_bytes_interface" % name)
+                    size = getattr(instance, "%s_len_interface" % name)
                     array = getattr(instance, "%s_interface" % name)
                 except Exception as e:
                     logging.exception(e)
@@ -116,6 +116,35 @@ if __name__ == '__main__':
 
                 try:
                     getattr(instance, "set_%s" % name)(bytes)
+                except Exception as e:
+                    logging.exception(e)
+                    send(errno_fail)
+                    continue
+                else:
+                    errno_success = d_instance["zezfio_id"]
+                    send(errno_success)
+                    logging.debug("Set Done. Errno is %s" % errno_success.value)
+
+            elif action == "get_ascii":
+                try:
+                    array = getattr(instance, "%s_ascii" % name)
+                except Exception as e:
+                    logging.exception(e)
+                    send(errno_fail)
+                    continue
+                else:
+                    send(errno_success,  zmq.SNDMORE)            
+                    send(array)
+
+            elif action == "set_ascii":
+                try:
+                    string = recv()
+                except zmq.error.ZMQError:
+                    logging.exception("Error when reading the number of string in set")
+                    continue
+
+                try:
+                    getattr(instance, "set_ascii_%s" % name)(string)
                 except Exception as e:
                     logging.exception(e)
                     send(errno_fail)

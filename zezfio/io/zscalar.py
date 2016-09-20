@@ -1,5 +1,6 @@
 from zezfio import babel
 import array
+import os
 
 def db2py(path,t_interface):
     "Return array c_type"
@@ -21,6 +22,10 @@ def db2py(path,t_interface):
 
     return py_data
 
+def db2interface(path,t_interface):
+    data = db2py(path,t_interface)
+    return babel.py2interface(t_interface,data)
+
 #Need to be and array or a string
 def interface2db(path, py_scalar):
 
@@ -28,6 +33,9 @@ def interface2db(path, py_scalar):
         data = py_scalar
     else:
         data = str(py_scalar[0])
+
+    if not os.path.exists(os.path.dirname(path)):
+        os.makedirs(os.path.dirname(path))
 
     with open(path, 'w') as f:
         f.write("%s\n" % data)

@@ -86,10 +86,10 @@ def db2interface(path,t_interface,nele):
     with gzip.open(path,"r") as f:
         f.readline()
         shape = map(int,f.readline().split())
-        dlen = babel.shape2nele(shape)
+        dlen = babel.shape2len(shape)
 
     if dlen != nele:
-        raise BytesWarning("Error: Asked number of elements (%s) different from the file header (%s)"%(dlen,nele))
+        raise BytesWarning("Error: Asked number of elements (%s) differ from the file header (%s)"%(dlen,nele))
 
     try:
         str_length = nele * babel.c2stuff[t_interface].str_size

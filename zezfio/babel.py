@@ -28,51 +28,15 @@ for i in range(3000):
   c2stuff["char[%d]"%i] = Convert(i+1,i,create_string_buffer,'c', "CHARACTER*(%d)"%i, ljust2)
 
 def is_char(t_interface):
-  if "char[" in t_interface:
-    return True
-  else:
-    return False
+  return "char[" in t_interface
 
 from operator import mul
-def shape2nele(l):
+def shape2len(l):
   return reduce(mul, l)
 
-#We need the len because, if the data_interface is a c_pointer it's iterable!
-def buffer_interface2py(data_interface,nele=0):
-
-  if nele:
-    return [data_interface[i] for i in range(nele)]
-  else:
-    return data_interface[0]
-
-def nele2bytes_interface(t_interface,nele=1):
+def len2bytes(t_interface,len_=-1):
+  nele = 1 if len_ == -1 else len_
   return c_int(c2stuff[t_interface].c_size*nele)
-
-
-def buffer_py2ascii(data_py):
-
-  try:
-    l = map(str,data_py)
-  except TypeError:
-    l = [ str(data_py) ]
-  return ",".join(l)
-
-
-def buffer_ascii2py(t_interface,data_ascii):
-
-  try:
-    code = c2stuff[t_interface].str2py
-  except KeyError:
-    raise KeyError("Cannot convert %s into py"%t_interface)
-  if is_char(t_interface):
-    # code is likely to be ljust...
-    return data_ascii.code(c2stuff[t_interface].c_size)
-  else:
-    l_data = ','.split(data_ascii)
-    return map(code,l_data)
-
-
-
 
 import array
 def bytes2interface(t_interface,bytes):
@@ -89,25 +53,64 @@ def bytes2interface(t_interface,bytes):
     
   return data_interface
 
+#Interface2byte is create by pyzmq
 
+#We need the len because, if the data_interface is a c_pointer it's not iterable!
+#We always receive a array. But if we now it is a scalar (len_=-1) just return
+#the first element
+def interface2py(data_interface,len_=-1):
+  if len_ != -1:
+    return [data_interface[i] for i in range(len_)]
+  else:
+    return data_interface[0]
+
+#Convert:
+# string    -> string
+# py_scalar -> Array
+# py_list   -> Array
 def py2interface(t_interface,data_py):
 
   if is_char(t_interface):
-    data_interface = data_py
+    return data_py
+  
+  try:
+    code = c2stuff[t_interface].py_array_code
+  except KeyError:
+    raise KeyError("Cannot convert %s into array"%t_interface) 
+    
+  if type(data_py) is list:  
+    data_py_array = data_py
   else:
-    try:
-      code = c2stuff[t_interface].py_array_code
-    except KeyError:
-      raise KeyError("Cannot convert %s into array"%t_interface) 
-    
-    if type(data_py) is list:  
-      data_py_array = data_py
-    else:
-      data_py_array = [data_py]
+    data_py_array = [data_py]
 
-    data_interface = array.array(code,data_py_array)
-    
-  return data_interface
+  return array.array(code,data_py_array)  
+
+def py2ascii(data_py):
+  try:
+    l = map(str,data_py)
+  except TypeError:
+    return str(data_py)
+  else:
+    return ",".join(l)
+
+def ascii2py(t_interface,data_ascii):
+
+  try:
+    code = c2stuff[t_interface].str2py
+  except KeyError:
+    raise KeyError("Cannot convert %s into py"%t_interface)
+
+  if is_char(t_interface):
+    # code is likely to be ljust...
+    return data_ascii.code(c2stuff[t_interface].c_size)
+  else:
+    l_data = data_ascii.split(',')
+    return map(code,l_data)
+
+def ascii2interface(t_interface,data_ascii):
+
+  data_py = ascii2py(t_interface,data_ascii)
+  return py2interface(t_interface,data_py)
 
 def type_fortran2c(t_fortran):
     for ctype, t in c2stuff.iteritems():
