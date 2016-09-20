@@ -26,9 +26,13 @@ class {{ category|capitalize }}(object):
 
     @irpy.lazy_property
     def {{ variable.name }}(self):
-        {# This value need to depend of _interface          #}
-        {# because it can used to define the size of arrays #}
+        {# This value needs to depend of _interface          #}
+        {# because it can be used to define the size of arrays #}
         return babel.buffer_interface2py(self.{{ variable.name }}_interface)
+
+    @irpy.lazy_property
+    def {{ variable.name }}_ascii(self):
+        return babel.buffer_py2ascii(self.{{ variable.name }})
 
     @irpy.lazy_property_mutable
     def {{ variable.name }}_interface(self):
@@ -68,15 +72,19 @@ class {{ category|capitalize }}(object):
 
     @irpy.lazy_property_mutable
     def {{ variable.name }}_interface(self):
-        {# IRPy bug /!\                                                   #}
-        {# Beacause db2interface is the C function,                       #}
-        {# we need to tell explicity that _interface is dependant of _nele#}
+        {# IRPy bug /!\                                                    #}
+        {# Beacause db2interface is the C function,                        #}
+        {# we need to tell explicity that _interface is dependant of _nele #}
         nele = self.{{ variable.name }}_nele
         return zarray.db2interface(self.{{variable.name}}_path,'{{ variable.type }}', nele)
 
     @irpy.lazy_property
     def {{ variable.name }}(self):
         return babel.buffer_interface2py(self.{{ variable.name }}_interface, nele=self.{{ variable.name }}_nele)
+
+    @irpy.lazy_property
+    def {{ variable.name }}_ascii(self):
+        return babel.buffer_py2ascii(self.{{ variable.name }}) 
 
     @irpy.lazy_property
     def {{ variable.name }}_bytes_interface(self):

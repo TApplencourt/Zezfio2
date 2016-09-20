@@ -49,6 +49,31 @@ def nele2bytes_interface(t_interface,nele=1):
   return c_int(c2stuff[t_interface].c_size*nele)
 
 
+def buffer_py2ascii(data_py):
+
+  try:
+    l = map(str,data_py)
+  except TypeError:
+    l = [ str(data_py) ]
+  return ",".join(l)
+
+
+def buffer_ascii2py(t_interface,data_ascii):
+
+  try:
+    code = c2stuff[t_interface].str2py
+  except KeyError:
+    raise KeyError("Cannot convert %s into py"%t_interface)
+  if is_char(t_interface):
+    # code is likely to be ljust...
+    return data_ascii.code(c2stuff[t_interface].c_size)
+  else:
+    l_data = ','.split(data_ascii)
+    return map(code,l_data)
+
+
+
+
 import array
 def bytes2interface(t_interface,bytes):
 
