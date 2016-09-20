@@ -22,10 +22,11 @@ $ ./legacy2json.py ../install/EZFIO/config/* > config.json #Create the config fi
 2) Fortran
 ```bash
 $ ./fang.py x.json > fortran/ezfio.f90 #Create fortran file who contain the ezfio API
-$ cd fortran
+$ mkdir fortran ; cd fortran
+$ cp lib_interface/libzezfio.f90 
 $ cp $QP_ROOT/install/_build/f77_zmq-master/f77_zmq.h . #Copy the f77_zmq.h for simplicity
 $ gfortran -O2 -g -ffree-line-length-none -fPIC -c *.f90 #Compile
-$ ar crv libezfio.a ezfio.o zezfio.o  #Create the library
+$ ar crv libezfio.a ezfio.o libzezfio.o  #Create the library
 ```
 3) Run
 ```
