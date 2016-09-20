@@ -30,7 +30,7 @@ $ ar crv libezfio.a ezfio.o libzezfio.o  #Create the library
 ```
 3) Run
 ```
-$./server.py  <zmq_bind_address> <path_config> <db_path> &  tail -f myapp.log
+$./server.py  <zmq_bind_address> <path_config> <db_path> &  tail -f zezfio.log
 $ export ZEZFIO_ADDRESS=<zmq_connection_address> ; a.out #The fortran will use this enviroment variable
 ```
 

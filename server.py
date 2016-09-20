@@ -8,7 +8,7 @@ if __name__ == '__main__':
     # | (_) (_| (_| | | | (_| 
     #        _|  _|        _| 
     #        
-    logging.basicConfig(filename='myapp.log', level=logging.ERROR)
+    logging.basicConfig(filename='zezfio.log', level=logging.ERROR)
 
     #  _             
     # |_) _. _|_ |_  
