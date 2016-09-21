@@ -2,7 +2,8 @@
 import zmq
 import logging
 
- import socket
+import socket
+
 def get_ip_address():
  return socket.gethostname()
 
