@@ -68,7 +68,7 @@ def stz_dim_array(shape, list_category):
 
 def schneewittchen(l_file):
     d = dict()
-    for path in sys.argv[1:]:   
+    for path in l_file:   
         d.update(one_dwarf(path))  
 
     return d
