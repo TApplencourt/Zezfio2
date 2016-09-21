@@ -1,7 +1,6 @@
 import os
-#dir_path = os.path.dirname(os.path.realpath(__file__))
-#dll_path = os.path.join(dir_path,"gz2ar.so")
-dll_path="gz2ar.so"
+dir_path = os.path.dirname(os.path.realpath(__file__))
+dll_path = os.path.join(dir_path,"gz2ar.so")
 
 from ctypes import CDLL, get_errno
 #Absolute path

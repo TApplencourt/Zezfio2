@@ -40,7 +40,7 @@ def load_json(path):
 
 import os
 file_dir = os.path.dirname(__file__)
-template_dir_rel = os.path.join(file_dir,"templates")
+template_dir_rel = os.path.join(file_dir,"template")
 template_dir = os.path.abspath(template_dir_rel)
 
 from jinja2 import Environment, FileSystemLoader

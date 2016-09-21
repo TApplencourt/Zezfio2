@@ -1,7 +1,7 @@
 from setuptools import setup, Extension
 
 gz2ar = "./zezfio/io/gz2ar"
-module = Extension("gz2ar",
+module = Extension("zezfio.io.gz2ar",
                     libraries = ['z'],
                     sources = ['%s.c'%gz2ar])
 
@@ -9,7 +9,7 @@ setup(
   name = 'zezfio',
   packages = ['zezfio','zezfio/template','zezfio/io','zezfio/lib'],
   scripts = ["zlegacy2json", "zfang", "zserver"],
-  version = '0.9.1',
+  version = '0.9.3',
   description = 'The lovely client/server version of Ezfio',
   author = 'Thomas applencourt',
   author_email = 'applencourt@irsamc.ups-tlse.fr',

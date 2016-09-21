@@ -2,10 +2,22 @@
 import zmq
 import logging
 
+import os
 import socket
+import fcntl
+import struct
 
-def get_ip_address():
- return socket.gethostname()
+
+def get_ip_address_tuples():
+  def get_ip_address(ifname):
+      s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+      return socket.inet_ntoa(fcntl.ioctl(
+          s.fileno(),
+          0x8915,  # SIOCGIFADDR
+          struct.pack('256s', ifname[:15])
+      )[20:24])
+  interfaces = [i for i in os.listdir('/sys/class/net/') if i != 'lo']
+  return [ (i, get_ip_address(i)) for i in interfaces ]
 
 
 if __name__ == '__main__':
@@ -42,7 +54,9 @@ if __name__ == '__main__':
     sock.bind(address)
 
     #Random tcp
-    tcp_port_selected = sock.bind_to_random_port('tcp://*', min_port=6001, max_port=6004, max_tries=100)
+    p = sock.bind_to_random_port('tcp://*', min_port=6001, max_port=16000, max_tries=100)
+    string_interface_info = ";".join("%s,tcp://%s:%d"%(i,a,p) for i,a in get_ip_address_tuples())
+
     # ~#~#~#~#
     # Little_optimisation
     # ~#~#~#~#
@@ -66,7 +80,7 @@ if __name__ == '__main__':
                 continue
 
             if m == "get_tcp":
-                send("tcp://%s:%s" %(get_ip_address(),tcp_port_selected))
+                send(string_interface_info)
                 continue
 
             try:
@@ -144,10 +158,10 @@ if __name__ == '__main__':
                     array = getattr(instance, "%s_ascii" % name)
                 except Exception as e:
                     logging.exception(e)
-                    send(errno_fail)
+                    send(str(errno_fail.value))
                     continue
                 else:
-                    send(errno_success,  zmq.SNDMORE)            
+                    send(str(errno_success.value),  zmq.SNDMORE)            
                     send(array)
 
             elif action == "set_ascii":
@@ -161,11 +175,11 @@ if __name__ == '__main__':
                     getattr(instance, "set_ascii_%s" % name)(string)
                 except Exception as e:
                     logging.exception(e)
-                    send(errno_fail)
+                    send(str(errno_fail.value))
                     continue
                 else:
                     errno_success = d_instance["zezfio_id"]
-                    send(errno_success)
+                    send(str(errno_success.value))
                     logging.debug("Set Done. Errno is %s" % errno_success.value)
 
             else:
