@@ -55,34 +55,35 @@ subroutine zezfio_finalize()
 
 end subroutine zezfio_finalize
 
-function zezfio_has(msg,msg_size) result(zerrno)
+function zezfio_has(msg) result(has_it)
    use zezfio, only: f77_zmq_send, f77_zmq_recv, requester
    implicit none
 
-   integer,              intent(in) :: msg_size
-   character*(msg_size), intent(in) :: msg
+   character*(*), intent(in)        :: msg
    integer                          :: zerrno
    integer                          :: rc
+   logical                          :: has_it
 
-   rc = f77_zmq_send(requester, "has."//msg, 4+msg_size,0)
+   rc = f77_zmq_send(requester, "has."//msg, 4+len(msg),0)
    rc = f77_zmq_recv(requester,  zerrno,     4,         0)
+
+   has_it = (rc >= 0)
 
 end function zezfio_has
 
 
-function zezfio_get(msg,msg_size,ptr_buffer) result(zerrno)
+function zezfio_get(msg,ptr_buffer) result(zerrno)
    use zezfio, only: f77_zmq_send, f77_zmq_recv, requester, ZMQ_PTR
    implicit none
 
    integer                      :: rc
 
-   integer,              intent(in) :: msg_size
-   character*(msg_size), intent(in) :: msg
+   character*(*), intent(in)        :: msg
    integer                          :: zerrno
    integer(ZMQ_PTR), intent(out)    :: ptr_buffer
    integer                          :: buffer_size
 
-   rc = f77_zmq_send(requester, "get."//msg, 4+msg_size,0)
+   rc = f77_zmq_send(requester, "get."//msg, 4+len(msg),0)
    rc = f77_zmq_recv(requester,zerrno,4, 0)
 
    
@@ -94,37 +95,35 @@ function zezfio_get(msg,msg_size,ptr_buffer) result(zerrno)
 
 end function zezfio_get
 
-function zezfio_set(msg,msg_size,ptr_buffer,buffer_size) result(zerrno)
+function zezfio_set(msg,ptr_buffer,buffer_size) result(zerrno)
    use zezfio, only: f77_zmq_send, f77_zmq_recv, requester, ZMQ_PTR, ZMQ_SNDMORE
    implicit none
 
    integer                      :: rc
 
-   integer,              intent(in) :: msg_size
-   character*(msg_size), intent(in) :: msg
+   character*(*)   ,     intent(in) :: msg
    integer(ZMQ_PTR),     intent(in) :: ptr_buffer
    integer,              intent(in) :: buffer_size
    integer                          :: zerrno
 
-   rc = f77_zmq_send(requester, "set."//msg, 4+msg_size,  ZMQ_SNDMORE)
+   rc = f77_zmq_send(requester, "set."//msg, 4+len(msg),  ZMQ_SNDMORE)
    rc = f77_zmq_send(requester, ptr_buffer,  buffer_size, 0)
 
    rc = f77_zmq_recv(requester,zerrno,4, 0)
 
 end function zezfio_set
 
-function zezfio_nbytes(msg,msg_size,buffer_size) result(zerrno)
+function zezfio_nbytes(msg,buffer_size) result(zerrno)
    use zezfio, only: f77_zmq_send, f77_zmq_recv, requester, ZMQ_PTR, ZMQ_SNDMORE
    implicit none
 
    integer                      :: rc
 
-   integer,              intent(in)  :: msg_size
-   character*(msg_size), intent(in)  :: msg
+   character*(*),        intent(in)  :: msg
    integer,              intent(out) :: buffer_size
    integer                           :: zerrno
 
-   rc = f77_zmq_send(requester, "size."//msg, 5+msg_size,  0)
+   rc = f77_zmq_send(requester, "size."//msg, 5+len(msg),  0)
 
    rc = f77_zmq_recv(requester,zerrno,4, 0)
 
