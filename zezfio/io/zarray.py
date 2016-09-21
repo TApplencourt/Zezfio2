@@ -46,6 +46,7 @@ def buffer2stuff_impure(t_interface,buffer,length):
         try:
             c_function = getattr(dll,"buffer2%s_impure"%t_interface)
         except AttributeError:
+            raise 
             raise BytesWarning("Error: No C function to convert your buffer in this format: %s"%t_interface)
         #Malloc the c_array
         try:

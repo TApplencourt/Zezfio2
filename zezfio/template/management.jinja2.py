@@ -11,11 +11,11 @@ d_instance["zezfio_id"] = c_int(0)
 def update_zezfio_id():
     d_instance["zezfio_id"] = c_int(d_instance["zezfio_id"].value + 1)
 
-{% for category, attributes in json_config.iteritems() %}
+{% for category in json_config -%}
 
 class {{ category|capitalize }}(object):
 
-    {% for variable in attributes["attributes"] %}
+    {% for variable in json_config[category] -%}
 
     @irpy.lazy_property_mutable
     def {{ variable.name }}_shape(self):
