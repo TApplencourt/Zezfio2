@@ -27,8 +27,14 @@ c2stuff = {
 for i in range(3000):
   c2stuff["char[%d]"%i] = Convert(i+1,i,create_string_buffer,'c', "CHARACTER*(%d)"%i, ljust2)
 
+def is_raw(t_interface):
+  return "raw" in t_interface
+
 def is_char(t_interface):
   return "char[" in t_interface
+
+def is_string(t_interface):
+  return any([is_char(t_interface),is_string(t_interface)])
 
 from operator import mul
 def shape2len(l):
@@ -41,18 +47,16 @@ def len2bytes(t_interface,len_=-1):
 import array
 def bytes2interface(t_interface,bytes):
 
-  if is_char(t_interface):
-    data_interface = bytes
-  else:
-    try:
-      code = c2stuff[t_interface].py_array_code
-    except KeyError:
-      raise KeyError("Cannot convert %s into array"%t_interface) 
-    else:  
-      data_interface = array.array(code,bytes)
-    
-  return data_interface
+  if is_string(t_interface):
+    return bytes
 
+  try:
+    code = c2stuff[t_interface].py_array_code
+  except KeyError:
+    raise KeyError("Cannot convert %s into array"%t_interface) 
+  else:  
+    return array.array(code,bytes)
+  
 #Interface2byte is create by pyzmq
 
 #We need the len because, if the data_interface is a c_pointer it's not iterable!
@@ -70,9 +74,9 @@ def interface2py(data_interface,len_=-1):
 # py_list   -> Array
 def py2interface(t_interface,data_py):
 
-  if is_char(t_interface):
+  if is_string(t_interface):
     return data_py
-  
+
   try:
     code = c2stuff[t_interface].py_array_code
   except KeyError:
@@ -93,7 +97,10 @@ def py2ascii(data_py):
   else:
     return ",".join(l)
 
-def ascii2py(t_interface,data_ascii):
+def ascii2py(t_interface,data_ascii,len_=-1):
+
+  if is_raw(t_interface):
+    return data_ascii
 
   try:
     code = c2stuff[t_interface].str2py
@@ -101,8 +108,8 @@ def ascii2py(t_interface,data_ascii):
     raise KeyError("Cannot convert %s into py"%t_interface)
 
   if is_char(t_interface):
-    # code is likely to be ljust...
-    return data_ascii.code(c2stuff[t_interface].c_size)
+    #We do padding
+    return code(data_ascii, t_interface)
   else:
     l_data = data_ascii.split(',')
     return map(code,l_data)
