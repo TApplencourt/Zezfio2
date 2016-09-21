@@ -1,7 +1,7 @@
 import zscalar
 import zarray
-import zraw
-import zezfio.babel
+from zezfio import babel
+import os
 
 def db2interface(path,t_interface,len_):
 

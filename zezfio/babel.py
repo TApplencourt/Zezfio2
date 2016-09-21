@@ -34,15 +34,19 @@ def is_char(t_interface):
   return "char[" in t_interface
 
 def is_string(t_interface):
-  return any([is_char(t_interface),is_string(t_interface)])
+  return any([is_char(t_interface),is_raw(t_interface)])
 
 from operator import mul
 def shape2len(l):
   return reduce(mul, l)
 
-def len2bytes(t_interface,len_=-1):
-  nele = 1 if len_ == -1 else len_
-  return c_int(c2stuff[t_interface].c_size*nele)
+def len2bytes(t_interface,len_=-1,str_=None):
+
+  if is_string(t_interface):
+    return len(str_)
+  else:
+    nele = len_ if len_ != -1 else 1
+    return c_int(c2stuff[t_interface].c_size*nele)
 
 import array
 def bytes2interface(t_interface,bytes):

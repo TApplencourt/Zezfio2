@@ -53,8 +53,14 @@ class {{ category|capitalize }}(object):
 
     @irpy.lazy_property
     def {{ variable.name }}_len_interface(self):
+
+        {% if variable.type != 'raw' %}
+
         return babel.len2bytes('{{ variable.type }}',
-                            self.{{ variable.name }}_len)
+                               self.{{ variable.name }}_len)
+        {% else %}
+        return c_int(len(self.{{ variable.name }}_interface))
+        {% endif %}
 
     #This value needs to depend of _interface            #
     #because it can be used to define the size of arrays #
@@ -65,11 +71,14 @@ class {{ category|capitalize }}(object):
 
     def set_{{ variable.name }}(self,bytes):
 
+        {% if variable.type != 'raw' %}
         sbytes = len(bytes)
         theobytes = self.{{ variable.name }}_len_interface.value
 
         if  sbytes != theobytes:
             raise IndexError("Conflic between the spec bytes of the array %i and the given one %i" % (sbytes, theobytes))       
+
+        {% endif %}
 
         data_interface = babel.bytes2interface('{{ variable.type }}', bytes)
         self.{{ variable.name }}_interface = data_interface
