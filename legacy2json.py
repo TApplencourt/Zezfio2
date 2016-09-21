@@ -36,16 +36,15 @@ def one_dwarf(path):
                 info["type"] = type_fortran2c(l_var[1])
         
                 try:
-                    info["dimension"] = "[%s]" % l_var[2][1:-1]
+                    info["shape"] = "[%s]" % l_var[2][1:-1]
                 except IndexError:
-                    info["dimension"] = "1"
+                    pass
             else:
 
                 l_var = re.findall(magic_split_line_regex_formula,attribute)[0]
 
                 info["name"] = l_var[0]
                 info["type"] = type_fortran2c(l_var[1])
-                info["dimension"] = "1"
                 info["default"] = l_var[2]
                 info["default"] = info["default"].replace("maxval","max")
                 info["default"] = info["default"].replace("minval","min")
@@ -57,13 +56,13 @@ def one_dwarf(path):
     return json_data
 
 
-def stz_dim_array(dimension, list_category):
+def stz_dim_array(shape, list_category):
     for category in list_category:
         old = "%s_"%category
         new = "%s."%category
-        dimension = re.sub(r"\b%s"%old,new,dimension)
+        shape = re.sub(r"\b%s"%old,new,shape)
 
-    return dimension
+    return shape
 
 
 
@@ -78,7 +77,11 @@ def magic_mirror(data):
     list_category = data.keys()
     for category,attributes in data.iteritems():
         for var in attributes["attributes"]:
-            var["dimension"] = stz_dim_array(var["dimension"],list_category)
+
+            try:
+                var["shape"] = stz_dim_array(var["shape"],list_category)
+            except:
+                pass
 
             try:
                 var["default"] = stz_dim_array(var["default"],list_category)
