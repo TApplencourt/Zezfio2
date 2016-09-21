@@ -270,7 +270,6 @@ void buffer2char(char * const buffer, const size_t lines_supposed,const size_t p
   size_t bytes_read = skip_lines(buffer, 2);
 
   size_t size_string = 0;
-  size_t offset = 0;
   size_t char_array_position = 0;
   size_t i;
 
