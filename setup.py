@@ -9,7 +9,7 @@ setup(
   name = 'zezfio',
   packages = ['zezfio','zezfio/template','zezfio/io','zezfio/lib'],
   scripts = ["zlegacy2json", "zfang", "zserver"],
-  version = '0.9.3',
+  version = '0.9.4',
   description = 'The lovely client/server version of Ezfio',
   author = 'Thomas applencourt',
   author_email = 'applencourt@irsamc.ups-tlse.fr',

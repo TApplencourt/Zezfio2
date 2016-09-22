@@ -84,7 +84,7 @@ if __name__ == '__main__':
                 continue
 
             try:
-                action, str_instance, name = m.split(".")
+                action, str_instance, name = m.split(".",3)
             except:
                 logging.exception("Error when splitting the message %s"%m)
                 continue

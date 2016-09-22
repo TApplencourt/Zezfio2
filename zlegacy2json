@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from zezfio.babel import type_fortran2c 
-from collections import defaultdict
+
 
 import re
 import sys
@@ -9,24 +9,33 @@ import sys
 magic_split_line_regex_dim=re.compile(r' +(\w*) +(.*?)( \(.*\) ?)?$')
 magic_split_line_regex_formula=re.compile(r'^ +(\w+) +(.*?)\s*=(.+)?$')
 
+#Example ao_ao_num -> ao.ao_num
+def stz_dim_array(shape_, list_category):
 
+    #So just sub everything.
+    shape = shape_
+    for category in list_category:
+        old = "%s_"%category
+        new = "%s."%category
+        shape = re.sub(r"\b%s"%old,new,shape)
+
+    return shape
+
+#From one file create a json on this format
 def one_dwarf(path):
     with open(path,"r") as f:
         data = f.read()
     
     l_block = [block for block in re.split('\n\s*\n', data) if block]
     
-    json_data = defaultdict(dict)
+    json_data = dict()
     
     for block in l_block:
         l_ligne = [ i for i in block.split("\n") if i ]
 
-        category = l_ligne[0]
-    
-        l_attribute = []
-    
+        l_attribute = []    
         for attribute in l_ligne[1:]:
-    
+
             info = dict()
             
             if "=" not in attribute:
@@ -50,22 +59,14 @@ def one_dwarf(path):
                 info["default"] = info["default"].replace("minval","min")
         
             l_attribute.append(info)
-        
-        json_data[category]["attributes"] = l_attribute
+
+        category = l_ligne[0]
+        json_data[category] = l_attribute
 
     return json_data
 
 
-def stz_dim_array(shape, list_category):
-    for category in list_category:
-        old = "%s_"%category
-        new = "%s."%category
-        shape = re.sub(r"\b%s"%old,new,shape)
-
-    return shape
-
-
-
+#Take a list of file, parse them and return one big json
 def schneewittchen(l_file):
     d = dict()
     for path in l_file:   
@@ -73,14 +74,16 @@ def schneewittchen(l_file):
 
     return d
 
-def magic_mirror(data):
+#Change the "_" in "." is possible
+#Exemple is ao exist, change ao_ao_num -> ao.ao_num
+def magic_mirror_impur(data):
     list_category = data.keys()
-    for category,attributes in data.iteritems():
-        for var in attributes["attributes"]:
+    for category in list_category:
+        for var in data[category]:
 
             try:
                 var["shape"] = stz_dim_array(var["shape"],list_category)
-            except:
+            except KeyError:
                 pass
 
             try:
@@ -90,9 +93,9 @@ def magic_mirror(data):
 
 if __name__ == '__main__':
     
-
+    #Take a list of file in imput
     data = schneewittchen(sys.argv[1:])
-    magic_mirror(data)
+    magic_mirror_impur(data)
 
     import json
     print json.dumps(data,  indent = 4)
