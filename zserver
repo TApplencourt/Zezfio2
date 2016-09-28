@@ -1,5 +1,9 @@
 #!/usr/bin/env python
-"""Usage: zserver <address> <ezfio_folder> [--file=<file>...]  [--dir=<dir>...]
+"""Usage: zserver <zmq_endpoint> <ezfio_folder> [--file=<file>...]  [--dir=<dir>...]
+
+The endpoint is a string consisting of a transport :// followed by an address. The transport specifies the underlying protocol to use. The address specifies the transport-specific address to bind to.
+For example : tcp://*:16661
+
 
 -h --help    show this
 -s --sorted  sorted output
@@ -13,7 +17,7 @@ import zmq
 import logging
 from docopt import docopt
 from zezfio.generator import Generator
-#Return a list of tuple (name_interface, the address)
+#Return a list of tuple (name_interface, the endpoint)
 #for all the socket avalable
 def get_ip_address_tuples():
     import socket
@@ -60,7 +64,7 @@ if __name__ == '__main__':
     sock = context.socket(zmq.REP)
 
     #IPC Adress
-    sock.bind(arguments["<address>"])
+    sock.bind(arguments["<zmq_endpoint>"])
 
     #Random tcp
     p = sock.bind_to_random_port('tcp://*', min_port=6001, max_port=16000, max_tries=100)
