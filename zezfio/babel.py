@@ -40,10 +40,10 @@ from operator import mul
 def shape2len(l):
   return reduce(mul, l)
 
-def len2bytes(t_interface,len_=-1,str_=None):
+def len2bytes(t_interface,len_=-1):
 
-  if is_string(t_interface):
-    return len(str_)
+  if is_char(t_interface):
+    return c_int(int(t_interface[5:-1]))
   else:
     nele = len_ if len_ != -1 else 1
     return c_int(c2stuff[t_interface].c_size*nele)

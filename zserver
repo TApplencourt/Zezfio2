@@ -44,14 +44,6 @@ if __name__ == '__main__':
     #
     arguments = docopt(__doc__)
 
-    g = Generator(arguments)
-
-    #                                     _       
-    # |_|  _. ._   _| |  _     _  _  ._ _|_ o  _  
-    # | | (_| | | (_| | (/_   (_ (_) | | |  | (_| 
-    #                                          _|
-    d_instance = g.d_instance
-
     #  __                 
     # (_   _  ._    _  ._ 
     # __) (/_ | \/ (/_ |  
@@ -78,6 +70,11 @@ if __name__ == '__main__':
     from ctypes import c_int
     errno_fail = c_int(-1)
     errno_success = c_int(0)
+
+    # ~#~#~#~#
+    # Load the irpy management
+    # ~#~#~#~#
+    d_instance = Generator(arguments).d_instance
 
     while True:
             #For the sake of performance, inline the main loop
